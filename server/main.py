@@ -4,8 +4,14 @@ import io
 import os
 from ServerDbConnector import ServerDbConnector
 
+# cd to the server/ directory
+SERVER_PATH = os.path.dirname(os.path.abspath(__file__))
+os.chdir(SERVER_PATH)
+
+
+
 app = Flask(__name__)
-db = ServerDbConnector()
+db = ServerDbConnector("../server.db")
 
 @app.route('/')
 def hello_world():
@@ -98,7 +104,7 @@ def pushFile():
             if fileId == None:
                 newId = db.addFile(fileName, parent, fileType, fileHash)
                 file = request.files[fileName]
-                filePath = 'server/files/'+str(newId)
+                filePath = "files/" + str(newId)
                 if not os.path.exists(filePath):
                     os.makedirs(filePath)
                 file.save(filePath+"/head")
