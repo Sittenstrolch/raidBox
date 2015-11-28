@@ -58,6 +58,6 @@ target/
 
 # DB-Stuff
 client.db
-server.db
+#server.db
 
 .DS_Store
