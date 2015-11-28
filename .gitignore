@@ -61,3 +61,6 @@ client.db
 #server.db
 
 .DS_Store
+
+server/fileUploadTest.py
+testImage.png
