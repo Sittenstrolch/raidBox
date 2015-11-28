@@ -102,6 +102,11 @@ def pushFile():
                 if not os.path.exists(filePath):
                     os.makedirs(filePath)
                 file.save(filePath+"/head")
+                return jsonify(
+                        {
+                            'id': newId
+                        }
+                    ), 200
             else:
                 # Update existing file
                 print "update existing"
