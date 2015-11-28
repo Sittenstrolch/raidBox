@@ -98,7 +98,7 @@ def pushFile():
             if fileId == None:
                 newId = db.addFile(fileName, parent, fileType, fileHash)
                 file = request.files[fileName]
-                filePath = 'server/files/'+str(newId)
+                filePath = 'files/'+str(newId)
                 if not os.path.exists(filePath):
                     os.makedirs(filePath)
                 file.save(filePath+"/head")

@@ -45,6 +45,8 @@ class SCSClient(object):
         self.file_list.files[id] = fullpath
         self.file_list.path_index[fullpath] = id
 
+        self.connector.pushFile(data, "adasd", "adasd")
+
 
     def initializeCloudStorage(self):
         print "initializing cloud storage in '%s'" % (self.path)

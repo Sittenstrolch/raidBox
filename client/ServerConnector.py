@@ -48,11 +48,18 @@ class ServerConnector(object):
             'response': r.json()
         }
 
-    def pushFile(self, fileId = None, lastChange = None):
-        # payload = {'lastChange': lastChange, 'fileId': fileId, 'withContent': boolean}
-        # r = requests.get(self.url + 'getChanges', params=payload)
-        # return {
-        #     'success': r.status_code == requests.codes.ok,
-        #     'response': r.json()
-        # }
-        return {'success': True}
+    def pushFile(self, file, lastChange = None, withContent = True):
+        payload = file
+
+        data = file["content"]
+        del file["content"]
+        headers = file
+        headers['lastChange'] = lastChange
+        headers['withContent'] = withContent
+
+        r = requests.post(self.url + 'pushFile', data=payload, headers=headers)
+        return {
+            'success': r.status_code == requests.codes.ok,
+            'response': r.json()
+        }
+
