@@ -22,8 +22,6 @@ class SCSClient(object):
 
         self.observeChanges()
 
-        print self.connector.getHierarchy();
-
     def observeChanges(self):
         self.observer = SCSFileObserver(self.path, self.file_list)
         self.observer.run()
@@ -34,14 +32,29 @@ class SCSClient(object):
 
         print "\nstopped SCSClient"
 
+    def downloadFile(self, id):
+        r = self.connector.getFile(id, 0, True)
+        data = r["response"]["data"]
+
+        path = data["filename"]
+        fullpath = os.path.join(self.path, path)
+
+        with open(fullpath, "wb") as fh:
+            fh.write(data["content"])
+
+        self.file_list.files[id] = fullpath
+        self.file_list.path_index[fullpath] = id
+
+
     def initializeCloudStorage(self):
         print "initializing cloud storage in '%s'" % (self.path)
         os.makedirs(self.path)
 
         # get all files that currently exist on the remote host
         response = self.connector.getHierarchy()
-        print response
-        # TODO: initialize the directory with all files from remote
+        data = response["response"]["data"]
+        for info in data:
+            self.downloadFile(info["id"])
 
     def sync(self):
         print "synchronizing"
