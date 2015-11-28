@@ -114,6 +114,12 @@ def pushFile():
                 # for fileName in filesUploaded:
                 #     file = request.files[fileName]
                 #     file.save(fileName)
+        else:
+            return jsonify(
+                    {
+                        'error': 'get the new changes first'
+                    }
+                ), 422
 
 if __name__ == '__main__':
     app.debug = True
