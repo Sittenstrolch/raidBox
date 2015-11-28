@@ -46,7 +46,7 @@ class SCSFileObserver(FileSystemEventHandler):
         path - The path for which we are tracking all changes
         files - An existing map of file, which maps the full path to it's ID (None if it has no ID yet)
     """
-    def __init__(self, path, files={}):
+    def __init__(self, path, files):
         super(SCSFileObserver, self).__init__()
         self.path = path
         self.changelog = SCSFileChangeLog()
@@ -67,16 +67,14 @@ class SCSFileObserver(FileSystemEventHandler):
             # check if all existing files have IDs
             for filename in files:
                 fullpath = os.path.join(root, filename)
-                if not fullpath in self.files:
-                    print "found new file", fullpath
-                    self.files[fullpath] = None
+                if not self.files.contains(fullpath):
+                    self.files.create(fullpath)
 
             # check if all existing dirs have IDs
             for filename in dirs:
                 fullpath = os.path.join(root, filename)
-                if not fullpath in self.files:
-                    print "found new dir", fullpath
-                    self.files[fullpath] = None
+                if not self.files.contains(fullpath):
+                    self.files.create(fullpath)
 
     def stop(self):
         self.observer.stop()
@@ -95,4 +93,7 @@ class SCSFileObserver(FileSystemEventHandler):
             return
 
         self.changelog.addChange(timestamp, event)
+
+    def getChanges(self):
+        return self.changelog.getChanges()
 

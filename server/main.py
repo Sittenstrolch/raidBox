@@ -59,12 +59,14 @@ def getFile():
 
     if (fileId and lastChange):
 
-        response = make_response(send_file("files/1/head", as_attachment=True, attachment_filename="daria.png"))
-        response.headers['X-fileId'] = '1'
-        response.headers['X-fileName'] = "daria.png"
-        response.headers['X-fileParent'] = "null"
-        response.headers['X-fileType'] = "file"
-        response.headers['X-fileHash'] = "BDFASRHF7894yhfnsofih89"
+        file = db.getFile(fileId)
+
+        response = make_response(send_file("files/" + str(fileId) + "/head", as_attachment=True, attachment_filename=file["name"]))
+        response.headers['X-fileId'] = str(fileId)
+        response.headers['X-fileName'] = file["name"]
+        response.headers['X-fileParent'] = file["parent"]
+        response.headers['X-fileType'] = file["type"]
+        response.headers['X-fileHash'] = file["hash"]
         return response
 
     return jsonify(

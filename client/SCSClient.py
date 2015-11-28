@@ -1,13 +1,16 @@
 import os
+import copy
 from SCSFileObserver import SCSFileObserver
 from ServerConnector import ServerConnector
 from ClientDbConnector import ClientDbConnector
+from FileList import FileList
 
 class SCSClient(object):
     """docstring for SCSClient"""
     def __init__(self, path):
         super(SCSClient, self).__init__()
         self.path = path
+        self.files = FileList()
 
     def run(self):
         print "running SCSClient"
@@ -22,7 +25,7 @@ class SCSClient(object):
         print self.connector.getFile(lastChange=1, fileId=1);
 
     def observeChanges(self):
-        self.observer = SCSFileObserver(self.path)
+        self.observer = SCSFileObserver(self.path, self.files)
         self.observer.run()
 
     def stop(self):
@@ -41,18 +44,17 @@ class SCSClient(object):
         # TODO: initialize the directory with all files from remote
 
     def sync(self):
-        # 1. getChanges
-        # excerpt of the log table
-        response = self.connector.getChanges()
-        # changes = response["data"]
-        changes = []
+        print "synchronizing"
+        # replay the changes on our file tree
+        # to identify the exact changes
+        local_changes = copy.copy(self.observer.getChanges())
+        local_changes = sorted(local_changes)
+        new_files = self.files.clone()
 
-        # todo: process the changes
-        # find out what files have to be downloaded
+        for timestamp, event in local_changes:
+            new_files.applyFileSystemEvent(event)
+        
+        print self.files.files, self.files.deleted_files
+        print new_files.files, new_files.deleted_files
 
-        # 2. getFile
-        for change in changes:
-            pass
-
-
-        # 3. push changes
+        
