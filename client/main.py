@@ -1,31 +1,27 @@
 
 import sys
 import time
-from SCSFileObserver import SCSFileObserver, SCSFileChangeLog
-from ServerConnector import ServerConnector
+from SCSClient import SCSClient
 
 def main(path):
-    print "Running SCS client"
-
-    observer = SCSFileObserver(path)
-    observer.run()
-
-    connector = ServerConnector(hostname='localhost', port=5000)
-
-    print connector.getChanges("1234")
-    print connector.getChanges()
+    client = SCSClient(path)
+    client.run()
 
     try:
+        # keep the main thread running
+        # terminate the application on CTRL+C
         while True:
-            time.sleep(2)
-            observer.changelog.printChanges()
-            # print observer.changelog.getChangesPerFile()
+            time.sleep(1)
+            client.observer.changelog.printChanges()
     except KeyboardInterrupt:
-        observer.stop()
-
-    observer.join()
+        client.stop()
 
 if __name__ == '__main__':
-    main("example_data/")
+    path = "example_data/"
+
+    if len(sys.argv) > 1:
+        path = sys.argv[1]
+
+    main(path)
 
 

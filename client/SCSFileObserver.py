@@ -22,19 +22,22 @@ class SCSFileChangeLog(object):
         file_changes = {}
         for ts, event in self.changes:
             if not event.src_path in file_changes:
-                file_changes[event.src_path] = [event]
+                file_changes[event.src_path] = [(ts, event)]
             else:
-                file_changes[event.src_path].append(event)
+                file_changes[event.src_path].append((ts, event))
 
         return file_changes
 
     def printChanges(self):
         changes = self.getChangesPerFile()
-        print "\nChanges:"
-        for path in changes:
-            print "\t", path
-            for event in changes[path]:
-                print "\t\t", event
+        if len(changes) > 0:
+            print "%d files changed" % len(changes)
+            for path in changes:
+                print "\t", path
+                for ts, event in changes[path]:
+                    print "\t\t", time.strftime("%H:%M:%S", time.gmtime(ts)), event
+        else:
+            print "No Changes"
         
 
 class SCSFileObserver(FileSystemEventHandler):
@@ -92,3 +95,4 @@ class SCSFileObserver(FileSystemEventHandler):
             return
 
         self.changelog.addChange(timestamp, event)
+
