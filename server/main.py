@@ -128,7 +128,9 @@ def pushFile():
                 file.save(filePath+"/head")
                 return jsonify(
                         {
-                            'id': fileId
+                            "data": {
+                                'id': fileId
+                            }
                         }
                     ), 200
         else:
