@@ -13,11 +13,10 @@ def hello_world():
 
 @app.route('/getHierarchy', methods=['GET'])
 def getHierarchy():
+
     return jsonify(
         {
-            data: {
-                getHierarchy: "SOOOOOOO MANY FILES"
-            }
+            'data': db.getFiles()
         }
     )
 
