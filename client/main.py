@@ -2,12 +2,17 @@
 import sys
 import time
 from SCSFileObserver import SCSFileObserver, SCSFileChangeLog
+from ServerConnector import ServerConnector
 
 def main(path):
     print "Running SCS client"
 
     observer = SCSFileObserver(path)
     observer.run()
+
+    connector = ServerConnector(hostname='localhost', port=5000)
+
+    print connector.getHierarchy()
 
     try:
         while True:
