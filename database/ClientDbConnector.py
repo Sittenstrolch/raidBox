@@ -1,9 +1,9 @@
 import sqlite3
 
 #looks for the connection to the db within the directory of execution
-class serverDbConnector:
+class ClientDbConnector:
     def __init__(self):
-        self.connection = sqlite3.connect('server.db')
+        self.connection = sqlite3.connect('client.db')
         self.cursor = self.connection.cursor()
 
     def getLogs(self):
@@ -21,6 +21,26 @@ class serverDbConnector:
 
     def getLog(self, logId):
         cursor = self.connection.execute('Select id, timestamp, fileId, action From Log Where id=?',(str(logId)))
+        log = {}
+        for row in cursor:
+            log = {
+                "id": row[0],
+                "timestamp": row[1],
+                "fileId": row[2],
+                "action": row[3]
+            }
+        return log
+
+    def getLatestLog(self):
+        cursor = self.connection.execute('''
+            Select id, timestamp, fileId, action
+            From Log
+            Where timestamp=(
+                Select MAX(timestamp)
+                From Log
+            )
+
+        ''')
         log = {}
         for row in cursor:
             log = {
@@ -55,6 +75,13 @@ class serverDbConnector:
         self.connection.commit()
         return self.cursor.lastrowid
 
+    def deleteLog(self, fileId):
+        self.cursor.execute('''
+            Delete from Log where id=?
+        ''', (str(logId)) )
+        self.connection.commit()
+        return self.cursor.lastrowid
+
     def addLogWithTimestamp(self, timestamp, fileId, action):
         self.connection.execute('''
             Insert into Log (timestamp, fileId, action)
@@ -78,7 +105,7 @@ class serverDbConnector:
 
     def deleteFile(self, fileId):
         self.updateFile(fileId, deleted, 1)
-        return
+        return true
 
     def updateFile(self, fileId, property, value):
         self.cursor.execute(
@@ -90,7 +117,7 @@ class serverDbConnector:
 
     def getFile(self, fileId):
         cursor = self.connection.execute(
-            "Select id, name, parent, type, hash, deleted from File Where id=?",
+            "Select id, name, parent, type, hash from File Where id=?",
             (str(fileId))
         )
         file = {}
@@ -100,13 +127,12 @@ class serverDbConnector:
                 "name": row[1],
                 "parent": row[2],
                 "type": row[3],
-                "hash": row[4],
-                "deleted": True if row[5]==1 else False
+                "hash": row[4]
             }
         return file
 
     def getFiles(self):
-        cursor = self.connection.execute("Select id, name, parent, type, hash, deleted from File")
+        cursor = self.connection.execute("Select id, name, parent, type, hash from File")
         files = []
         for row in cursor:
             file = {
@@ -114,8 +140,7 @@ class serverDbConnector:
                 "name": row[1],
                 "parent": row[2],
                 "type": row[3],
-                "hash": row[4],
-                "deleted": True if row[5]==1 else False
+                "hash": row[4]
             }
             files.append(file)
         return files
