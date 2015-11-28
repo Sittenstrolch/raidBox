@@ -1,9 +1,13 @@
+import os
 import sqlite3
 
 #looks for the connection to the db within the directory of execution
 class ServerDbConnector:
-    def __init__(self):
-        self.connection = sqlite3.connect('server.db', check_same_thread=False)
+    def __init__(self, path):
+        if not os.path.exists(path):
+            raise Exception("can not find sqlite database")
+
+        self.connection = sqlite3.connect(path, check_same_thread=False)
         self.cursor = self.connection.cursor()
 
     def getLogs(self):
