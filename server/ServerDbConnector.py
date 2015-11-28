@@ -3,7 +3,7 @@ import sqlite3
 #looks for the connection to the db within the directory of execution
 class ServerDbConnector:
     def __init__(self):
-        self.connection = sqlite3.connect('server.db')
+        self.connection = sqlite3.connect('../server.db', check_same_thread=False)
         self.cursor = self.connection.cursor()
 
     def getLogs(self):
