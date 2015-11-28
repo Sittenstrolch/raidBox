@@ -28,6 +28,9 @@ class SCSFileChangeLog(object):
 
         return file_changes
 
+    def clear(self):
+        self.changes.clear()
+
     def printChanges(self):
         changes = self.getChangesPerFile()
         if len(changes) > 0:

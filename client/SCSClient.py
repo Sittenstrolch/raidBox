@@ -80,7 +80,7 @@ class SCSClient(object):
 
 
     def sync(self):
-        print "synchronizing"
+        print "synchronizing..."
         # replay the changes on our file tree
         # to identify the exact changes
         local_changes = copy.copy(self.observer.getChanges())
@@ -90,8 +90,8 @@ class SCSClient(object):
         for timestamp, event in local_changes:
             new_list.applyFileSystemEvent(event)
 
-        print self.tree.files, self.tree.deleted_files
-        print new_list.files, new_list.deleted_files
+        # print self.tree.files, self.tree.deleted_files
+        # print new_list.files, new_list.deleted_files
 
         # synching
         for fileId in new_list.files:
@@ -103,9 +103,9 @@ class SCSClient(object):
                 with open(path, "rb") as fh:
                     data = {
                         "filename": os.path.basename(path),
-                        "parent": 0,
+                        "parent": None,
                         "type": "file",
-                        "hash": "XXX",
+                        "hash": "abc",
                         "content": fh.read()
                     }
                     response = self.connector.pushFile(data, 0, True)
@@ -128,6 +128,24 @@ class SCSClient(object):
 
         for fileId in new_list.modified_files:
             print "File modified: %d : %s" % (fileId, new_list.getPath(fileId))
+
+            path = new_list.getPath(fileId)
+            with open(path, "rb") as fh:
+                data = {
+                    "id": fileId,
+                    "filename": os.path.basename(path),
+                    "parent": None,
+                    "type": "file",
+                    "hash": "abc",
+                    "content": fh.read()
+                }
+
+                response = self.connector.pushFile(data, 0, True)
+                # todo: update db File
+
+        new_list.modified_files.clear()
+        new_list.deleted_files.clear()
+        self.observer.changelog.clear()
 
         self.tree = new_list
 

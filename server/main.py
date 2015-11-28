@@ -120,9 +120,9 @@ def pushFile():
                         }
                     ), 200
             else:
-                db.updateFile({'name': fileName, 'parent': parent, 'type': fileType, 'hash': fileHash})
+                db.updateFile({'filename': fileName, 'parent': parent, 'type': fileType, 'hash': fileHash, 'id': fileId})
                 file = request.files[fileName]
-                filePath = "files/" + str(newId)
+                filePath = "files/" + str(fileId)
                 if not os.path.exists(filePath):
                     os.makedirs(filePath)
                 file.save(filePath+"/head")

@@ -12,7 +12,7 @@ def main(path):
         # terminate the application on CTRL+C
         while True:
             time.sleep(2.5)
-            client.observer.changelog.printChanges()
+            # client.observer.changelog.printChanges()
             client.sync()
     except KeyboardInterrupt:
         client.stop()
