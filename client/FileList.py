@@ -17,6 +17,9 @@ class FileList(object):
         self.deleted_files = set()
         self.modified_files = set()
 
+    def getPath(self, id):
+        return self.files[id] if id in self.files else None
+
     def getByPath(self, path):
         return self.files[self.path_index[path]] if path in self.path_index else None
 

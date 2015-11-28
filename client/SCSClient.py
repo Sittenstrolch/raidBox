@@ -10,7 +10,7 @@ class SCSClient(object):
     def __init__(self, path):
         super(SCSClient, self).__init__()
         self.path = path
-        self.files = FileList()
+        self.file_list = FileList()
 
     def run(self):
         print "running SCSClient"
@@ -25,7 +25,7 @@ class SCSClient(object):
         print self.connector.getFile(lastChange=1, fileId=1);
 
     def observeChanges(self):
-        self.observer = SCSFileObserver(self.path, self.files)
+        self.observer = SCSFileObserver(self.path, self.file_list)
         self.observer.run()
 
     def stop(self):
@@ -49,12 +49,32 @@ class SCSClient(object):
         # to identify the exact changes
         local_changes = copy.copy(self.observer.getChanges())
         local_changes = sorted(local_changes)
-        new_files = self.files.clone()
+        new_list = self.file_list.clone()
 
         for timestamp, event in local_changes:
-            new_files.applyFileSystemEvent(event)
+            new_list.applyFileSystemEvent(event)
         
-        print self.files.files, self.files.deleted_files
-        print new_files.files, new_files.deleted_files
+        print self.file_list.files, self.file_list.deleted_files
+        print new_list.files, new_list.deleted_files
+
+        # synching
+        for fileId in new_list.files:
+            if fileId < 0 and not fileId in new_list.deleted_files:
+                print "New File Created: %s" % (new_list.getPath(fileId))
+
+            if new_list.getPath(fileId) != self.file_list.getPath(fileId):
+                print "File Moved: %s (from %s)" % (new_list.getPath(fileId), self.file_list.getPath(fileId))
+
+        for fileId in new_list.deleted_files:
+            if fileId > 0: # only delete files that already have been synched
+                print "File deleted: %s" % (new_list.getPath(fileId))
+
+        for fileId in new_list.modified_files:
+            print "File modified: %s" % (new_list.getPath(fileId))
+
+        self.file_list = new_list
+
+
+
 
         
