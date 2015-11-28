@@ -86,7 +86,11 @@ def getFile():
 def pushFile():
 
     fileName = request.headers["filename"]
-    parent = request.headers["parent"]
+
+    parent = None
+    if 'parent' in request.headers:
+        parent = request.headers["parent"]
+
     fileId = None
     fileType = request.headers["type"]
     withContent = request.headers["withContent"]
@@ -114,11 +118,17 @@ def pushFile():
                         }
                     ), 200
             else:
+                db.updateFile({'name': fileName, 'parent': parent, 'type': fileType, 'hash': fileHash})
+                file = request.files[fileName]
+                filePath = "files/" + str(newId)
+                if not os.path.exists(filePath):
+                    os.makedirs(filePath)
+                file.save(filePath+"/head")
                 return jsonify(
                         {
-                            'error': 'update not yet supported'
+                            'id': fileId
                         }
-                    ), 422
+                    ), 200
         else:
             return jsonify(
                     {

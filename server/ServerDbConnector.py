@@ -105,10 +105,10 @@ class ServerDbConnector:
         self.updateFile(fileId, deleted, 1)
         return
 
-    def updateFile(self, fileId, property, value):
+    def updateFile(self, file):
         self.cursor.execute(
-            "Update File set ?=? where id=?",
-            (property, value, str(fileId))
+            "Update File set name=?, parent=?, type=?, hash=? where id=?",
+            (file['filename'], file['parent'], file['type'], file['hash'], str(fileId))
         )
         self.connection.commit()
         return true
