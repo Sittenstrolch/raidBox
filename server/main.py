@@ -1,8 +1,10 @@
 #!/bin/python
 from flask import *
 import io
+from ServerDbConnector import ServerDbConnector
 
 app = Flask(__name__)
+db = ServerDbConnector()
 
 @app.route('/')
 def hello_world():
@@ -75,6 +77,8 @@ def getFile():
 @app.route('/pushFile', methods=['GET', 'POST'])
 def pushFile():
     print request.headers
+    db.getLogs()
+
     if request.method == 'POST':
         filesUploaded = request.files.keys()
         for fileName in filesUploaded:
