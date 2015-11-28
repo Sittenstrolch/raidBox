@@ -53,6 +53,10 @@ class SCSClient(object):
         # get all files that currently exist on the remote host
         response = self.connector.getHierarchy()
         data = response["response"]["data"]
+
+        #store files to local db
+        self.db.addFiles(data);
+
         for info in data:
             self.downloadFile(info["id"])
 
@@ -66,7 +70,7 @@ class SCSClient(object):
 
         for timestamp, event in local_changes:
             new_list.applyFileSystemEvent(event)
-        
+
         print self.file_list.files, self.file_list.deleted_files
         print new_list.files, new_list.deleted_files
 
@@ -90,4 +94,4 @@ class SCSClient(object):
 
 
 
-        
+

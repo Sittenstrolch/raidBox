@@ -110,6 +110,12 @@ class ClientDbConnector:
         self.connection.commit()
         return self.cursor.lastrowid
 
+    def addFiles(self, files):
+
+        for file in files:
+            self.addFile(file['name'], file['parent'], file['type'], file['hash'])
+
+
     def deleteFile(self, fileId):
         self.updateFile(fileId, deleted, 1)
         return true
