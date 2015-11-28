@@ -8,7 +8,10 @@ def hello_world():
 
 @app.route('/getHierarchy', methods=['GET'])
 def getHierarchy():
-    return 'getHierarchy'
+	return jsonify(
+		getHierarchy="SOOOOOOO MANY FILES"
+    )
+
 
 @app.route('/getChanges', methods=['GET'])
 def getChanges():
