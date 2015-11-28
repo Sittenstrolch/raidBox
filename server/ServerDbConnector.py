@@ -3,7 +3,7 @@ import sqlite3
 #looks for the connection to the db within the directory of execution
 class ServerDbConnector:
     def __init__(self):
-        self.connection = sqlite3.connect('../server.db', check_same_thread=False)
+        self.connection = sqlite3.connect('server.db', check_same_thread=False)
         self.cursor = self.connection.cursor()
 
     def getLogs(self):
@@ -30,6 +30,27 @@ class ServerDbConnector:
                 "action": row[3]
             }
         return log
+
+    def getLatestLog(self):
+        cursor = self.connection.execute('''
+            Select id, timestamp, fileId, action
+            From Log
+            Where timestamp=(
+                Select MAX(timestamp)
+                From Log
+            )
+
+        ''')
+        log = {}
+        for row in cursor:
+            log = {
+                "id": row[0],
+                "timestamp": row[1],
+                "fileId": row[2],
+                "action": row[3]
+            }
+        return log
+
 
     def getLogsSince(self, timestamp):
         cursor = self.connection.execute(
@@ -68,11 +89,11 @@ class ServerDbConnector:
         self.connection.commit()
         return true
 
-    def addFile(self, name, parent, type, hash):
+    def addFile(self, name, parent, fileType, fileHash):
         self.cursor.execute('''
             Insert into File (name, parent, type, hash)
             VALUES (? ,?, ?, ?)
-        ''', (name, parent, type, hash))
+        ''', (name, str(parent), fileType, fileHash))
         self.connection.commit()
         return self.cursor.lastrowid
 

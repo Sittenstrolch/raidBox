@@ -1,6 +1,7 @@
 #!/bin/python
 from flask import *
 import io
+import os
 from ServerDbConnector import ServerDbConnector
 
 app = Flask(__name__)
@@ -78,14 +79,37 @@ def getFile():
 
 @app.route('/pushFile', methods=['GET', 'POST'])
 def pushFile():
-    print request.headers
-    db.getLogs()
+
+    fileName = request.headers["name"]
+    parent = request.headers["parent"]
+    fileId = None
+    fileType = request.headers["type"]
+    withContent = request.headers["withContent"]
+    lastChange = request.headers["lastChange"]
+    fileHash = request.headers["hash"]
+
+    if 'id' in request.headers:
+        fileId = request.headers['id']
+
+    latestLog = db.getLatestLog()
 
     if request.method == 'POST':
-        filesUploaded = request.files.keys()
-        for fileName in filesUploaded:
-            file = request.files[fileName]
-            file.save(fileName)
+        if latestLog == {} or latestLog == request.headers["lastChange"]:
+            # New File created
+            if fileId == None:
+                newId = db.addFile(fileName, parent, fileType, fileHash)
+                file = request.files[fileName]
+                filePath = 'server/files/'+str(newId)
+                if not os.path.exists(filePath):
+                    os.makedirs(filePath)
+                file.save(filePath+"/head")
+            else:
+                # Update existing file
+                print "update existing"
+                # filesUploaded = request.files.keys()
+                # for fileName in filesUploaded:
+                #     file = request.files[fileName]
+                #     file.save(fileName)
 
 if __name__ == '__main__':
     app.debug = True
