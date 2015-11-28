@@ -85,7 +85,7 @@ def getFile():
 @app.route('/pushFile', methods=['GET', 'POST'])
 def pushFile():
 
-    fileName = request.headers["name"]
+    fileName = request.headers["filename"]
     parent = request.headers["parent"]
     fileId = None
     fileType = request.headers["type"]
@@ -114,12 +114,11 @@ def pushFile():
                         }
                     ), 200
             else:
-                # Update existing file
-                print "update existing"
-                # filesUploaded = request.files.keys()
-                # for fileName in filesUploaded:
-                #     file = request.files[fileName]
-                #     file.save(fileName)
+                return jsonify(
+                        {
+                            'error': 'update not yet supported'
+                        }
+                    ), 422
         else:
             return jsonify(
                     {

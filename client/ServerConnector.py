@@ -57,7 +57,7 @@ class ServerConnector(object):
         headers['lastChange'] = lastChange
         headers['withContent'] = withContent
 
-        r = requests.post(self.url + 'pushFile', data=payload, headers=headers)
+        r = requests.post(self.url + 'pushFile', files=[(file['filename'], data)], headers=headers)
         return {
             'success': r.status_code == requests.codes.ok,
             'response': r.json()
