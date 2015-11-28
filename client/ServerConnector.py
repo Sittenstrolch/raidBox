@@ -11,3 +11,11 @@ class ServerConnector(object):
     def getHierarchy(self):
         r = requests.get(self.url + 'getHierarchy')
         return r.json()
+
+    def getChanges(self, lastChange = None):
+        payload = {'lastChange': lastChange}
+        r = requests.get(self.url + 'getChanges', params=payload)
+        return {
+            'success': r.status_code == requests.codes.ok,
+            'response': r.json()
+        }

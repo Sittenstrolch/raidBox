@@ -12,7 +12,8 @@ def main(path):
 
     connector = ServerConnector(hostname='localhost', port=5000)
 
-    print connector.getHierarchy()
+    print connector.getChanges("1234")
+    print connector.getChanges()
 
     try:
         while True:
