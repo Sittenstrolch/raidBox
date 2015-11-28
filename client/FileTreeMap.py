@@ -17,7 +17,7 @@ class FileTreeMap(object):
         self.deleted_files = set()
         self.modified_files = set()
 
-    def add(self, id, path):
+    def index(self, id, path):
         self.files[id] = path
         self.path_index[path] = id
 
