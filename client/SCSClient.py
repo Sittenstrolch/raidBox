@@ -1,6 +1,7 @@
 import os
 from SCSFileObserver import SCSFileObserver
 from ServerConnector import ServerConnector
+from ClientDbConnector import ClientDbConnector
 
 class SCSClient(object):
     """docstring for SCSClient"""
@@ -11,6 +12,7 @@ class SCSClient(object):
     def run(self):
         print "running SCSClient"
         self.connector = ServerConnector(hostname="localhost", port=5000)
+        self.db = ClientDbConnector("../client.db")
 
         if not os.path.exists(self.path):
             self.initializeCloudStorage()
@@ -49,3 +51,6 @@ class SCSClient(object):
         # 2. getFile
         for change in changes:
             pass
+
+
+        # 3. push changes

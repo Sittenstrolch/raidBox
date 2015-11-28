@@ -1,10 +1,17 @@
 import sqlite3
+import os
 
 #looks for the connection to the db within the directory of execution
 class ClientDbConnector:
-    def __init__(self):
-        self.connection = sqlite3.connect('client.db')
+    def __init__(self, path):
+        if not os.path.exists(path):
+            raise Exception("can not find sqlite database")
+
+        self.connection = sqlite3.connect(path)
         self.cursor = self.connection.cursor()
+        self.path = path
+
+        print "connected to database"
 
     def getLogs(self):
         cursor = self.connection.execute('Select id, timestamp, fileId, action From Log')
