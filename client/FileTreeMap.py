@@ -1,10 +1,10 @@
 from copy import copy
 
-class FileList(object):
-    """docstring for FileList"""
+class FileTreeMap(object):
+    """docstring for FileTreeMap"""
     
     def __init__(self, files={}, path_index={}):
-        super(FileList, self).__init__()
+        super(FileTreeMap, self).__init__()
         self.new_id = -len(files) - 1
 
         # id to file path
@@ -16,6 +16,10 @@ class FileList(object):
 
         self.deleted_files = set()
         self.modified_files = set()
+
+    def add(self, id, path):
+        self.files[id] = path
+        self.path_index[path] = id
 
     def getPath(self, id):
         return self.files[id] if id in self.files else None
@@ -39,8 +43,6 @@ class FileList(object):
             if id in self.deleted_files:
                 self.deleted_files.remove(id)
                 self.modified_files.add(id)
-            else:
-                print "SHOULD NOT HAPPEN"
         else:
             self.files[self.new_id] = path
             self.path_index[path] = self.new_id
@@ -56,7 +58,7 @@ class FileList(object):
         return self.path_index[path] if path in self.path_index else None
 
     def clone(self):
-        return FileList(copy(self.files), copy(self.path_index))
+        return FileTreeMap(copy(self.files), copy(self.path_index))
 
     def contains(self, path):
         return self.getId(path) is not None

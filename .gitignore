@@ -63,3 +63,5 @@ client.db
 .DS_Store
 
 testImage.png
+
+client/files/

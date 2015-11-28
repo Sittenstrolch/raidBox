@@ -3,14 +3,15 @@ import copy
 from SCSFileObserver import SCSFileObserver
 from ServerConnector import ServerConnector
 from ClientDbConnector import ClientDbConnector
-from FileList import FileList
+from FileTreeMap import FileTreeMap
 
 class SCSClient(object):
     """docstring for SCSClient"""
     def __init__(self, path):
         super(SCSClient, self).__init__()
         self.path = path
-        self.file_list = FileList()
+
+        self.tree = FileTreeMap()
 
     def run(self):
         print "running SCSClient"
@@ -19,11 +20,29 @@ class SCSClient(object):
 
         if not os.path.exists(self.path):
             self.initializeCloudStorage()
+        else:
+            # load the file info from the database
+            infos = self.db.getFiles()
+            infoMap = { info["id"]: info for info in infos }
+
+            # print infoMap
+            for info in infos:
+                parts = [info["name"]]
+
+                while info["parent"]:
+                    info = infoMap[info["parent"]]
+                    parts.append(info["name"])
+
+                path = "/".join(parts)
+                fullpath = os.path.join(self.path, path)
+                self.tree.add(info["id"], fullpath)
+
+            print self.tree.files
 
         self.observeChanges()
 
     def observeChanges(self):
-        self.observer = SCSFileObserver(self.path, self.file_list)
+        self.observer = SCSFileObserver(self.path, self.tree)
         self.observer.run()
 
     def stop(self):
@@ -42,8 +61,9 @@ class SCSClient(object):
         with open(fullpath, "wb") as fh:
             fh.write(data["content"])
 
-        self.file_list.files[id] = fullpath
-        self.file_list.path_index[fullpath] = id
+        # store the information in our file list
+        self.tree.files[id] = fullpath
+        self.tree.path_index[fullpath] = id
 
 
     def initializeCloudStorage(self):
@@ -55,10 +75,12 @@ class SCSClient(object):
         data = response["response"]["data"]
 
         #store files to local db
-        self.db.addFiles(data);
+        self.db.truncateFiles()
+        self.db.addFiles(data)
 
         for info in data:
             self.downloadFile(info["id"])
+
 
     def sync(self):
         print "synchronizing"
@@ -66,30 +88,30 @@ class SCSClient(object):
         # to identify the exact changes
         local_changes = copy.copy(self.observer.getChanges())
         local_changes = sorted(local_changes)
-        new_list = self.file_list.clone()
+        new_list = self.tree.clone()
 
         for timestamp, event in local_changes:
             new_list.applyFileSystemEvent(event)
 
-        print self.file_list.files, self.file_list.deleted_files
+        print self.tree.files, self.tree.deleted_files
         print new_list.files, new_list.deleted_files
 
         # synching
         for fileId in new_list.files:
             if fileId < 0 and not fileId in new_list.deleted_files:
-                print "New File Created: %s" % (new_list.getPath(fileId))
+                print "New File Created: %d : %s" % (fileId, new_list.getPath(fileId))
 
-            if new_list.getPath(fileId) != self.file_list.getPath(fileId):
-                print "File Moved: %s (from %s)" % (new_list.getPath(fileId), self.file_list.getPath(fileId))
+            if new_list.getPath(fileId) != self.tree.getPath(fileId):
+                print "File Moved: %d : %s (from %s)" % (fileId, new_list.getPath(fileId), self.tree.getPath(fileId))
 
         for fileId in new_list.deleted_files:
             if fileId > 0: # only delete files that already have been synched
-                print "File deleted: %s" % (new_list.getPath(fileId))
+                print "File deleted: %d : %s" % (fileId, new_list.getPath(fileId))
 
         for fileId in new_list.modified_files:
-            print "File modified: %s" % (new_list.getPath(fileId))
+            print "File modified: %d : %s" % (fileId, new_list.getPath(fileId))
 
-        self.file_list = new_list
+        self.tree = new_list
 
 
 
