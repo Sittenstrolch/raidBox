@@ -11,8 +11,9 @@ def main(path):
         # keep the main thread running
         # terminate the application on CTRL+C
         while True:
-            time.sleep(1)
+            time.sleep(2.5)
             client.observer.changelog.printChanges()
+            client.sync()
     except KeyboardInterrupt:
         client.stop()
 
