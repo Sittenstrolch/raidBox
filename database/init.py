@@ -12,7 +12,7 @@ def createServerFileTable ():
         parent TEXT,
         type CHAR(10),
         hash TEXT,
-        deleted BOOLEAN
+        deleted BOOLEAN default 0
     )''')
 
 def createClientFileTable ():
