@@ -1,6 +1,10 @@
 #!/bin/python
 from flask import *
+import io
+from ServerDbConnector import ServerDbConnector
+
 app = Flask(__name__)
+db = ServerDbConnector()
 
 @app.route('/')
 def hello_world():
@@ -54,13 +58,16 @@ def getFile():
         lastChange = False
 
     if (fileId and lastChange):
-        return jsonify(
-            {
-                'data': {
-                    'file': "LOOK AT DAT FILE"
-                }
-            }
-        )
+
+        file = db.getFile(fileId)
+
+        response = make_response(send_file("files/" + str(fileId) + "/head", as_attachment=True, attachment_filename=file["name"]))
+        response.headers['X-fileId'] = str(fileId)
+        response.headers['X-fileName'] = file["name"]
+        response.headers['X-fileParent'] = file["parent"]
+        response.headers['X-fileType'] = file["type"]
+        response.headers['X-fileHash'] = file["hash"]
+        return response
 
     return jsonify(
             {
@@ -71,9 +78,12 @@ def getFile():
 
 @app.route('/pushFile', methods=['GET', 'POST'])
 def pushFile():
+    print request.headers
     if request.method == 'POST':
-        f = request.files['the_file']
-        f.save('/var/www/uploads/uploaded_file.txt')
+        filesUploaded = request.files.keys()
+        for fileName in filesUploaded:
+            file = request.files[fileName]
+            file.save(fileName)
 
 if __name__ == '__main__':
     app.debug = True

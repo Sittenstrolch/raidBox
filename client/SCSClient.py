@@ -22,6 +22,8 @@ class SCSClient(object):
 
         self.observeChanges()
 
+        print self.connector.getFile(lastChange=1, fileId=1);
+
     def observeChanges(self):
         self.observer = SCSFileObserver(self.path, self.files)
         self.observer.run()
@@ -35,7 +37,7 @@ class SCSClient(object):
     def initializeCloudStorage(self):
         print "initializing cloud storage in '%s'" % (self.path)
         os.makedirs(self.path)
-        
+
         # get all files that currently exist on the remote host
         response = self.connector.getHierarchy()
         print response
