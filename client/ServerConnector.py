@@ -27,17 +27,26 @@ class ServerConnector(object):
         payload = {'lastChange': lastChange, 'fileId': fileId, 'withContent': withContent}
         r = requests.get(self.url + 'getFile', params=payload, stream=True)
 
-        local_filename = "example_data/daria.png"
+        if (r.status_code == requests.codes.ok):
 
-        with open(local_filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk: # filter out keep-alive new chunks
-                    f.write(chunk)
+            return {
+                'success' : True,
+                'response' : {
+                    'data': {
+                        'id' : r.headers['X-fileHash'],
+                        'filename': r.headers['X-fileName'],
+                        'parent': r.headers['X-fileParent'],
+                        'type': r.headers['X-fileType'],
+                        'hash': r.headers['X-fileHash'],
+                        'content': r.content
+                    }
+                }
+            }
 
-        # return {
-        #     'success': r.status_code == requests.codes.ok,
-        #     'response': r.json()
-        # }
+        return {
+            'success': r.status_code == requests.codes.ok,
+            'response': r.json()
+        }
 
     def pushFile(self, fileId = None, lastChange = None):
         # payload = {'lastChange': lastChange, 'fileId': fileId}
@@ -47,4 +56,4 @@ class ServerConnector(object):
         #     'response': r.json()
         # }
 
-        return {'success': true}
+        return {'success': True}
