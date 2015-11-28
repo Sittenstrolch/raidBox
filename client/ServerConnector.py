@@ -33,7 +33,7 @@ class ServerConnector(object):
                 'success' : True,
                 'response' : {
                     'data': {
-                        'id' : r.headers['X-fileHash'],
+                        'id' : r.headers['X-fileId'],
                         'filename': r.headers['X-fileName'],
                         'parent': r.headers['X-fileParent'],
                         'type': r.headers['X-fileType'],
