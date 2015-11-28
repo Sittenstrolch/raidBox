@@ -100,25 +100,28 @@ class ClientDbConnector:
     def deleteLog(self, logId):
         self.cursor.execute('''DELETE FROM Log WHERE id=?''',(str(logId)))
         self.connection.commit()
-        return true
+        return Tsrue
 
-    def addFile(self, name, parent, type, hash):
+    def addFile(self, fileId, name, parent, type, hash):
         self.cursor.execute('''
-            Insert into File (name, parent, type, hash)
-            VALUES (? ,?, ?, ?)
-        ''', (name, parent, type, hash))
+            Insert into File (id, name, parent, type, hash)
+            VALUES (?, ? ,?, ?, ?)
+        ''', (fileId, name, parent, type, hash))
         self.connection.commit()
         return self.cursor.lastrowid
 
     def addFiles(self, files):
-
         for file in files:
-            self.addFile(file['name'], file['parent'], file['type'], file['hash'])
+            self.addFile(file['id'], file['name'], file['parent'], file['type'], file['hash'])
 
+    def truncateFiles(self):
+        self.cursor.execute("DELETE FROM File")
+        self.connection.commit()
+        return True
 
     def deleteFile(self, fileId):
         self.updateFile(fileId, deleted, 1)
-        return true
+        return True
 
     def updateFile(self, fileId, property, value):
         self.cursor.execute(
@@ -126,7 +129,7 @@ class ClientDbConnector:
             (property, value, str(fileId))
         )
         self.connection.commit()
-        return true
+        return True
 
     def getFile(self, fileId):
         cursor = self.connection.execute(

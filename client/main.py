@@ -18,7 +18,7 @@ def main(path):
         client.stop()
 
 if __name__ == '__main__':
-    path = "example_data/"
+    path = "files/"
 
     if len(sys.argv) > 1:
         path = sys.argv[1]
