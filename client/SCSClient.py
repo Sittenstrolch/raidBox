@@ -17,6 +17,8 @@ class SCSClient(object):
 
         self.observeChanges()
 
+        self.connector.getFile(fileId = 1, lastChange = "2134")
+
     def observeChanges(self):
         self.observer = SCSFileObserver(self.path)
         self.observer.run()
@@ -30,4 +32,3 @@ class SCSClient(object):
     def initializeCloudStorage(self):
         print "initializing cloud storage in '%s'" % (self.path)
         os.makedirs(self.path)
-        
