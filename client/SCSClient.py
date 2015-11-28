@@ -35,9 +35,7 @@ class SCSClient(object):
 
                 path = "/".join(parts)
                 fullpath = os.path.join(self.path, path)
-                self.tree.add(info["id"], fullpath)
-
-            print self.tree.files
+                self.tree.index(info["id"], fullpath)
 
         self.observeChanges()
 
@@ -62,8 +60,7 @@ class SCSClient(object):
             fh.write(data["content"])
 
         # store the information in our file list
-        self.tree.files[id] = fullpath
-        self.tree.path_index[fullpath] = id
+        self.tree.index(id, fullpath)
 
 
     def initializeCloudStorage(self):
@@ -99,7 +96,28 @@ class SCSClient(object):
         # synching
         for fileId in new_list.files:
             if fileId < 0 and not fileId in new_list.deleted_files:
+                # CREATE NEW FILE
                 print "New File Created: %d : %s" % (fileId, new_list.getPath(fileId))
+
+                path = new_list.getPath(fileId)
+                with open(path, "rb") as fh:
+                    data = {
+                        "filename": os.path.basename(path),
+                        "parent": 0,
+                        "type": "file",
+                        "hash": "XXX",
+                        "content": fh.read()
+                    }
+                    response = self.connector.pushFile(data, 0, True)
+                    id = response["response"]["data"]["id"]
+
+                    self.db.addFile(id, data["filename"], data["parent"], data["type"], data["hash"])
+
+                    del new_list.files[fileId]
+                    new_list.files[id] = path
+                    new_list.path_index[path] = id
+
+
 
             if new_list.getPath(fileId) != self.tree.getPath(fileId):
                 print "File Moved: %d : %s (from %s)" % (fileId, new_list.getPath(fileId), self.tree.getPath(fileId))
