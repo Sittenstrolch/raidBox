@@ -11,7 +11,8 @@ def createServerFileTable ():
         name TEXT,
         parent TEXT,
         type CHAR(10),
-        hash TEXT
+        hash TEXT,
+        deleted BOOLEAN
     )''')
 
 def createClientFileTable ():
