@@ -1,6 +1,6 @@
 
 def main():
-	print "Running SCS client"
+	print "Running SCS server"
 	pass
 
 if __name__ == '__main__':
