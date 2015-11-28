@@ -5,33 +5,31 @@ import sqlite3
 connServer = sqlite3.connect('server.db')
 connClient = sqlite3.connect('client.db')
 
-print "Opened database successfully";
-
 def createServerFileTable ():
     connServer.execute('''create table File(
-        id int Primary Key,
-        name text,
-        parent text,
-        type char(10),
-        hash text
+        id INTEGER PRIMARY KEY,
+        name TEXT,
+        parent TEXT,
+        type CHAR(10),
+        hash TEXT
     )''')
 
 def createClientFileTable ():
     connClient.execute('''create table File(
-        id INT Primary Key,
-        name text,
-        parent text,
-        type char(10),
-        hash text
+        id INTEGER PRIMARY KEY,
+        name TEXT,
+        parent TEXT,
+        type CHAR(10),
+        hash TEXT
     )''')
 
 
 def createLogTable (conn):
     conn.execute('''create table Log(
-        id int Primary Key,
-        timestamp int,
-        fileId text,
-        action char(40)
+        id INTEGER PRIMARY KEY,
+        timestamp INT default (strftime(\'%s\',\'now\')),
+        fileId TEXT,
+        action CHAR(40)
     )''')
 
 createServerFileTable()
