@@ -22,7 +22,7 @@ class SCSClient(object):
 
         self.observeChanges()
 
-        print self.connector.getFile(lastChange=1, fileId=1);
+        print self.connector.getHierarchy();
 
     def observeChanges(self):
         self.observer = SCSFileObserver(self.path, self.file_list)
