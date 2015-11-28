@@ -71,9 +71,12 @@ def getFile():
 
 @app.route('/pushFile', methods=['GET', 'POST'])
 def pushFile():
+    print request.headers
     if request.method == 'POST':
-        f = request.files['the_file']
-        f.save('/var/www/uploads/uploaded_file.txt')
+        filesUploaded = request.files.keys()
+        for fileName in filesUploaded:
+            file = request.files[fileName]
+            file.save(fileName)
 
 if __name__ == '__main__':
     app.debug = True

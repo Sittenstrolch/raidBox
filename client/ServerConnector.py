@@ -32,7 +32,7 @@ class ServerConnector(object):
         }
 
     def pushFile(self, fileId = None, lastChange = None):
-        # payload = {'lastChange': lastChange, 'fileId': fileId}
+        # payload = {'lastChange': lastChange, 'fileId': fileId, 'withContent': boolean}
         # r = requests.get(self.url + 'getChanges', params=payload)
         # return {
         #     'success': r.status_code == requests.codes.ok,
