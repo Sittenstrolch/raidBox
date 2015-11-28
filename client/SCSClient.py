@@ -31,3 +31,21 @@ class SCSClient(object):
         print "initializing cloud storage in '%s'" % (self.path)
         os.makedirs(self.path)
         
+        # get all files that currently exist on the remote host
+        response = self.connector.getHierarchy()
+        print response
+        # TODO: initialize the directory with all files from remote
+
+    def sync(self):
+        # 1. getChanges
+        # excerpt of the log table
+        response = self.connector.getChanges()
+        # changes = response["data"]
+        changes = []
+
+        # todo: process the changes
+        # find out what files have to be downloaded
+        
+        # 2. getFile
+        for change in changes:
+            pass
